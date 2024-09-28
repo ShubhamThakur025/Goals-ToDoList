@@ -16,11 +16,11 @@ public class User implements UserDetails {
     @GeneratedValue (strategy =  GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
-    @Column(name = "USERNAME")
+    @Column(name = "USERNAME", unique = true, nullable = false)
     private String username;
-    @Column(name = "PASSWORD")
+    @Column(name = "PASSWORD", nullable = false)
     private String password;
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL", unique = true, nullable = false)
     private String email;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -67,7 +67,6 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Return roles or authorities (optional)
         return null;
     }
 }

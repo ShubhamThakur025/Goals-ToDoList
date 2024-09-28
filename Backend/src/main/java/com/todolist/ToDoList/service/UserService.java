@@ -3,14 +3,13 @@ package com.todolist.ToDoList.service;
 import com.todolist.ToDoList.model.User;
 import com.todolist.ToDoList.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -19,9 +18,15 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public Optional<User> loadUserByUsername(String username) throws UsernameNotFoundException {
-        return Optional.ofNullable(userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found")));
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                new ArrayList<>()
+        );
     }
 
     public User createUser(User user) {
