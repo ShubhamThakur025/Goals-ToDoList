@@ -2,6 +2,7 @@ package com.todolist.ToDoList.controller;
 
 import com.todolist.ToDoList.dto.LoginRequest;
 import com.todolist.ToDoList.model.User;
+import com.todolist.ToDoList.security.JwtHelper;
 import com.todolist.ToDoList.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,10 @@ public class UserController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtHelper jwtHelper;
+
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id){
@@ -41,7 +46,8 @@ public class UserController {
         try {
             UserDetails userDetails = userService.loadUserByUsername(username);
             if (passwordEncoder.matches(password, userDetails.getPassword())) {
-                return ResponseEntity.ok("Login Successful!");
+                String jwtToken = jwtHelper.generateToken(userDetails);
+                return ResponseEntity.ok(jwtToken);
             } else {
                 return ResponseEntity.status(401).body("Invalid Credentials");
             }
